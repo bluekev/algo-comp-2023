@@ -16,9 +16,25 @@ class User:
 
 # Takes in two user objects and outputs a float denoting compatibility
 def compute_score(user1, user2):
-    # YOUR CODE HERE
-    return 0
 
+    score = 0
+    if user1.gender == user2.gender:
+        score += 0
+    elif user1.gender != user2.gender:
+        score += 0.3
+
+    if user1.grad_year - user2.grad_year >= 2:
+        score += 0
+    elif user1.grad_year - user2.grad_year == 1:
+        score += 0.05
+    elif user1.grad_year == user2.grad_year:
+        score += 0.2
+
+    for i in range(len(user1.responses)):
+        if user1.responses[i] == user2.responses[i]:
+            score += 0.025 #0.025 was chosen because if two users have the same exact responses, then the maximum possible overall compatibility score would be 1 overall.
+
+    return score
 
 if __name__ == '__main__':
     # Make sure input file is valid

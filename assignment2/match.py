@@ -1,7 +1,53 @@
 import numpy as np
 from typing import List, Tuple
+import random
 
 def run_matching(scores: List[List], gender_id: List, gender_pref: List) -> List[Tuple]:
+
+    Proposer = [0, 1, 2, 3, 4]
+    Acceptor = [5, 6, 7, 8, 9]
+    matches = 0
+
+    current_matches = {}
+    maybe_matches = {}
+
+    def get_key(val):
+        for key, value in current_matches.items():
+            if val == value:
+                return key
+
+    while matches < 5:
+
+        for single_proposer in Proposer:
+            random_acceptor = random.choice(Acceptor) #Choosing random acceptor for each single proposer
+            maybe_matches[single_proposer] = random_acceptor #Temporarily matching the random acceptor with the single proposer
+            print(maybe_matches)
+
+            if random_acceptor not in current_matches.values(): #if the random acceptor is NOT already in a match
+                current_matches.update(maybe_matches)
+                maybe_matches.clear()
+                matches = len(current_matches)
+                print(str(current_matches) + " current")
+
+            else: #if the random acceptor is already in a match
+
+                existing_proposer = get_key(maybe_matches[single_proposer]) #pre-existing proposer already matched with the random acceptor
+
+                if scores[single_proposer][maybe_matches[single_proposer]] > scores[existing_proposer][maybe_matches[single_proposer]]: #comparing scores between hypothetical single proposer + random acceptor match VS pre-existing proposer + random acceptor match
+                    del current_matches[existing_proposer]
+                    current_matches.update(maybe_matches)
+                    print(str(maybe_matches) + " new match")
+                    maybe_matches.clear()
+                    print(str(current_matches) + " updated")
+
+                else:
+                    maybe_matches.clear()
+                    #if at least 1 proposer is not matched, the for loop will start again (as seen by the print statements). This will likely occur because it is unlikely for each proposer to be randomly matched with a different acceptor each time.
+                    #Repetition of the for loop allows for better matches because each proposer will be assigned a random acceptor again, and the compatibility scores will be compared.
+                matches = len(current_matches)
+
+    print(current_matches)
+
     """
     TODO: Implement Gale-Shapley stable matching!
     :param scores: raw N x N matrix of compatibility scores. Use this to derive a preference rankings.
@@ -39,3 +85,6 @@ if __name__ == "__main__":
             gender_preferences.append(curr)
 
     gs_matches = run_matching(raw_scores, genders, gender_preferences)
+
+
+
